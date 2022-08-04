@@ -1,0 +1,536 @@
+#include<fstream.h>         // cin, cout and file related functions
+#include<iostream.h>
+#include<string.h>        // strcmp, strcmpi, strcpy
+#include<conio.h>          // clrscr, getch
+#include<stdlib.h>
+#include<stdio.h>
+
+// Flight Enquiry System
+
+class flight
+{
+   int fltno;
+   char from[25];
+   char to[25];
+   long fare;
+public:
+   void input();
+   void output();
+   int getFltno();
+   char * getFrom();
+   char * getTo();
+   long getFare();
+};
+
+// User-Defined Functions
+
+int login();
+void menu();
+void addNewFlight();
+void modifyFlight();
+void deleteFlight();
+void displayFlights();
+void search_flightno();
+void search_source();
+void search_dest();
+void search_srcdest();
+
+// Member functions of the class
+
+void flight :: input()
+{
+  cout << "\nEnter flight number: ";
+  cin >> fltno;
+  cout << "\nEnter source: ";
+  cin >> from;
+  strupr(from);
+  cout << "\nEnter destination: ";
+  cin >> to;
+  strupr(to);
+  cout << "\nEnter Fare (Rs): ";
+  cin >> fare;
+}
+void flight :: output()
+{
+   cout << "\nFlight No: " << fltno;
+   cout << "\nSource: " << from;
+   cout << "\nDestination: " << to;
+   cout << "\nFare (Rs): " << fare << endl;
+}
+int flight :: getFltno()
+{
+   return fltno;
+}
+char * flight :: getFrom()
+{
+   return from;
+}
+char * flight :: getTo()
+{
+   return to;
+}
+long flight :: getFare()
+{
+   return fare;
+}
+
+int main()
+{
+   if (login())
+       menu();
+   else
+       cout << "\nInvalid user.";
+   return 0;
+}
+
+int login()
+{
+    char pwd[15], ch;
+
+    cout << "\nWelcome to Flight Enquiry System";
+    cout << "\n================================\n";
+
+    int total = 3;
+    for (int attempts = 1; attempts <= total; attempts++)
+    {
+       cout << "\n\nCaution! You have " << (total - attempts + 1) << " attempts left\n";
+       cout << "\nEnter password: ";
+
+      int i = 0;
+
+      while(1)
+      {
+	ch = getch();
+	cout << "*";
+
+	  if (ch == '\r')
+	  {
+	      break;
+	  }
+
+	  pwd[i] = ch;
+	  i++;
+      }
+
+      pwd[i] = '\0';
+
+      if (strcmp(pwd, "flight")==0)
+	  return 1;
+    }
+    return 0;
+}
+
+void menu()
+{
+  int choice;
+
+    do
+    {
+      system("cls");
+		cout << "* *\n";
+		cout << " *     *\n";
+		cout << " ********\n";
+		cout << " *     *\n";
+		cout << "* *\n";
+		cout << "\nWelcome to Flight Enquiry System";
+		cout << "\n================================\n";
+		cout << "\nMain Menu";
+		cout << "\n=========";
+      cout << "\n1. Add new flight";
+      cout << "\n2. Modify flight";
+      cout << "\n3. Delete flight";
+      cout << "\n4. Display all flights";
+      cout << "\n5. Search on flight number";
+      cout << "\n6. Search on source";
+      cout << "\n7. Search on destination";
+      cout << "\n8. Search on source and destination";
+      cout << "\n0. Exit";
+      cout << "\n\nEnter choice [0-8]: ";
+      cin >> choice;
+
+       switch(choice)
+       {
+	 case 1: addNewFlight(); break;
+	 case 2: modifyFlight(); break;
+	 case 3: deleteFlight(); break;
+	 case 4: displayFlights(); break;
+	 case 5: search_flightno(); break;
+	 case 6: search_source(); break;
+	 case 7: search_dest(); break;
+	 case 8: search_srcdest(); break;
+	 case 0: break;
+	 default: cout << "\n\nInvalid choice\n"; break;
+       }
+    } while (choice != 0);
+
+}
+
+void addNewFlight()
+{
+  system("cls");
+    ofstream f ("flt.dat", ios::binary | ios::app);
+
+    if (!f)
+    {
+	cout << "\nFile not opened....... Press any key to continue\n";
+	getch();
+	return;
+    }
+
+    cout << "\nFlight Addition Screen";
+    cout << "\n======================\n";
+
+    flight t;
+
+    t.input();
+
+    char choice;
+    cout << "\nSave the record (y/n): ";
+    cin >> choice;
+
+    if (choice == 'y' || choice == 'Y')
+    {
+	f.write((char *)&t, sizeof(t));
+
+	cout << "\nRecord saved successfully";
+    }
+
+    f.close();
+    cout << "\nPress any key to continue...";
+    getch();
+}
+
+void modifyFlight()
+{
+  system("cls");
+
+    ifstream f1 ("flt.dat", ios::binary);
+    ofstream f2 ("t.dat", ios::binary);
+
+    if (!f1 || !f2)
+    {
+	cout << "\nFile not opened....... Press any key to continue\n";
+	getch();
+    return;
+}
+
+cout << "\nFlight Modification Screen";
+cout << "\n==========================\n";
+
+flight t;
+
+int fno, flag = 0;
+cout << "\nEnter flight number to modify: ";
+cin >> fno;
+
+while (f1.read((char *)&t, sizeof(t)))
+{
+  if (t.getFltno() == fno)
+  {
+      flag = 1;
+
+	t.output();
+
+	cout << "\n\nEnter new details: ";
+	t.input();
+    }
+
+    f2.write((char *)&t, sizeof(t));
+}
+
+f1.close();
+f2.close();
+
+if (flag == 0)
+{
+    cout << "\nInvalid flight number";
+}
+else
+{
+    char choice;
+    cout << "\nSave the record (y/n): ";
+    cin >> choice;
+
+    if (choice == 'y' || choice == 'Y')
+    {
+	remove("flt.dat");
+	    rename("t.dat", "flt.dat");
+
+            cout << "\nRecord modified successfully";
+        }
+    }
+
+    cout << "\nPress any key to continue...";
+    getch();
+}
+
+void deleteFlight()
+{
+  system("cls");
+
+    ifstream f1 ("flt.dat", ios::binary);
+    ofstream f2 ("t.dat", ios::binary);
+
+    if (!f1 || !f2)
+    {
+        cout << "\nFile not opened....... Press any key to continue\n";
+        getch();
+        return;
+    }
+
+            cout << "\nFlight Deletion Screen";
+            cout << "\n======================\n";
+
+    flight t;
+
+    int fno, flag = 0;
+    cout << "\nEnter flight number to delete: ";
+    cin >> fno;
+
+    while (f1.read((char *)&t, sizeof(t)))
+    {
+      if (t.getFltno() != fno)
+      {
+          f2.write((char *)&t, sizeof(t));
+      }
+      else
+      {
+          t.output();
+          flag = 1;
+        }
+    }
+
+    f1.close();
+    f2.close();
+
+    if (flag == 0)
+    {
+        cout << "\nInvalid flight number";
+    }
+    else
+    {
+        char choice;
+        cout << "\nSure to delete the record (y/n): ";
+        cin >> choice;
+
+        if (choice == 'y' || choice == 'Y')
+        {
+	    remove("flt.dat");
+	    rename("t.dat", "flt.dat");
+
+            cout << "\nRecord deleted successfully";
+        }
+    }
+
+    cout << "\nPress any key to continue...";
+    getch();
+}
+
+void displayFlights()
+{
+  system("cls");
+
+    ifstream f ("flt.dat", ios::binary);
+
+    if (!f)
+    {
+        cout << "\nFile not opened....... Press any key to continue\n";
+        getch();
+        return;
+    }
+
+    flight t;
+          cout << "\nDetails of flights";
+          cout << "\n==================\n";
+
+    while (f.read((char *)&t, sizeof(t)))
+    {
+      t.output();
+      cout << "\n=====================================\n";
+    }
+
+    f.close();
+    cout << "\nPress any key to continue...";
+    getch();
+}
+
+void search_flightno()
+{
+  system("cls");
+
+    ifstream f ("flt.dat", ios::binary);
+
+    if (!f)
+    {
+        cout << "\nFile not opened....... Press any key to continue\n";
+        getch();
+        return;
+    }
+
+          cout << "\nFlight Searching Screen";
+          cout << "\n=======================\n";
+
+    int fno, flag = 0;
+    cout << "\nEnter flight number to search: ";
+    cin >> fno;
+
+    flight t;
+
+    while (f.read((char *)&t, sizeof(t)))
+    {
+      if (t.getFltno() == fno)
+      {
+          flag = 1;
+          break;
+       }
+    }
+
+    if (flag == 1)
+    {
+        t.output();
+        cout << "\n=====================================\n";
+    }
+    else
+    {
+        cout << "\nInvalid flight number";
+    }
+
+    f.close();
+    cout << "\nPress any key to continue...";
+    getch();
+}
+
+void search_source()
+{
+  system("cls");
+
+    ifstream f ("flt.dat", ios::binary);
+
+    if (!f)
+    {
+        cout << "\nFile not opened....... Press any key to continue\n";
+        getch();
+        return;
+    }
+
+            cout << "\nFlight Searching Screen";
+            cout << "\n=======================\n";
+
+    int flag = 0;
+    char src[25];
+
+    cout << "\nEnter source to search: ";
+    cin >> src;
+
+    flight t;
+
+    while (f.read((char *)&t, sizeof(t)))
+    {
+        if (strcmpi(t.getFrom(), src)==0)
+        {
+            flag = 1;
+            t.output();
+            cout << "\n=====================================\n";
+        }
+    }
+
+    if (flag == 0)
+    {
+        cout << "\nInvalid source";
+    }
+
+    f.close();
+    cout << "\nPress any key to continue...";
+    getch();
+}
+
+void search_dest()
+{
+  system("cls");
+
+    ifstream f ("flt.dat", ios::binary);
+
+    if (!f)
+    {
+        cout << "\nFile not opened....... Press any key to continue\n";
+        getch();
+        return;
+    }
+
+          cout << "\nFlight Searching Screen";
+          cout << "\n=======================\n";
+
+    int flag = 0;
+
+    char dst[25];
+
+    cout << "\nEnter destination to search: ";
+    cin >> dst;
+
+    flight t;
+    while (f.read((char *)&t, sizeof(t)))
+    {
+      if (strcmpi(t.getTo(), dst)==0)
+      {
+          flag = 1;
+          t.output();
+          cout << "\n=====================================\n";
+      }
+    }
+
+    if (flag == 0)
+    {
+        cout << "\nInvalid destination";
+    }
+    f.close();
+    cout << "\nPress any key to continue...";
+    getch();
+}
+
+void search_srcdest()
+{
+  system("cls");
+
+    ifstream f ("flt.dat", ios::binary);
+
+    if (!f)
+    {
+        cout << "\nFile not opened....... Press any key to continue\n";
+        getch();
+        return;
+    }
+
+         cout << "\nFlight Searching Screen";
+         cout << "\n=======================\n";
+
+    int flag = 0;
+
+    char src[25], dst[25];
+
+    cout << "\nEnter source to search: ";
+    cin >> src;
+    cout << "\nEnter destination to search: ";
+    cin >> dst;
+
+    flight t;
+
+    while (f.read((char *)&t, sizeof(t)))
+    {
+      if (strcmpi(t.getFrom(), src)==0 &&
+          strcmpi(t.getTo(), dst) == 0)
+      {
+          flag = 1;
+          t.output();
+          cout << "\n=====================================\n";
+      }
+    }
+
+    if (flag == 0)
+    {
+        cout << "\nInvalid source/destination";
+    }
+
+    f.close();
+    cout << "\nPress any key to continue...";
+    getch();
+} 
