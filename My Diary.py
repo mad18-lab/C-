@@ -59,11 +59,12 @@ while count != 0:
             diary = open("diary.txt", "r")
             lines = diary.readlines()
             del_diary = open("diary.txt", "w")
-            date = input("Enter date of entry you wish to delete: ")
+            date = input("\nEnter date of entry you wish to delete: ")
             for line in lines:
                 if date not in line.strip():
                     del_diary.write(line)
             print("\nEntry Successfully Deleted.")
+            diary.close()
 
 
         def all_entry():
