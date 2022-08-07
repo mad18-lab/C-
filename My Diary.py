@@ -71,9 +71,12 @@ while count != 0:
             diary = open("diary.txt", "r")
             file_size = os.stat("diary.txt").st_size
             if file_size == 0:
-                print("\nNo entries present in file. Restart to make a new entry(s)!")
+                print("\nNo entries currently present in file. Restart to make a new entry(s)!")
             else:
-                print(diary.read())
+                lines = diary.readlines()
+                for line in lines:
+                    output3 = textwrap.fill(line, width=125)
+                    print(output3)
             diary.close()
 
 
