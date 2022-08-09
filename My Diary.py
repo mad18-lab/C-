@@ -121,11 +121,17 @@ while count != 0:
                 rep2 = input("\nEnter the portion of the entry you want to succeed: ")
                 mod2 = input("\nEnter your successive entry: ")
 
-                for line in lines:
-                    line = line.rstrip("\n")
-                    if rep2 in line:
-                        line = line + " " + mod2
-                        diary.write(line)
+                if mod2 in lines[-1]:
+                    lines.append(mod2)
+
+                else:
+                    for i, line in enumerate(lines):
+                        if rep2 in line and mod2 not in lines[i + 1]:
+                            lines.insert(i + 1, mod2)
+                            break
+
+                diary.seek(0)
+                diary.writelines(lines)
 
 
         def del_entry():
@@ -157,7 +163,8 @@ while count != 0:
                     for line in lines:
                         if key_word not in line.rstrip():
                             del_diary.write(line)
-                    print("\nEntry Successfully Deleted.")
+                        else:
+                            print("\nEntry Successfully Deleted.")
                     del_diary.close()
 
             else:
@@ -176,7 +183,8 @@ while count != 0:
                 for line in lines:
                     if key_word not in line.rstrip():
                         del_diary.write(line)
-                print("\nEntry Successfully Deleted.")
+                    else:
+                        print("\nEntry Successfully Deleted.")
                 del_diary.close()
 
 
