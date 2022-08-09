@@ -1,5 +1,4 @@
 import textwrap
-import os
 count = 5
 while count != 0:
     pwd = input("Please enter password to access: ")
@@ -8,76 +7,185 @@ while count != 0:
         print("\nHere you can write anything you want, anyway you want, without any interruption whatsoever.")
         print("\nNow, what do you want to do?")
         print("\n*****MAIN MENU*****")
-        print("1. Write a new entry")
+        print("1. Write a new entry(s)")
         print("2. Access a previous entry")
-        print("3. Delete a previous entry")
-        print("4. Print all entries")
-        print("5. Delete all entries")
+        print("3. Add an entry to a previous date")
+        print("4. Delete a previous entry")
+        print("5. Print all entries")
+        print("6. Delete all entries")
 
 
         def new_entry():
             diary = open("diary.txt", "a")
-            diary.write("Your Entry: ")
-            entry = input("\nEnter the date and your corresponding entry: ")
-            diary.write(entry + '\n')
-            diary.write('\n\n')
-            diary.close()
+            n = int(input("\nDo you want to make a single entry or more than one (answer in number): "))
+            if n > 1:
+                for i in range(n):
+                    diary.write("\nYour Entry: ")
+                    entry = input("\nEnter the date and your corresponding entry: ")
+                    diary.write(entry + '\n')
+
+            else:
+                diary.write("\nYour Entry: ")
+                entry = input("\nEnter the date and your corresponding entry: ")
+                diary.write(entry + '\n')
+                diary.close()
 
 
         def read_entry():
             diary = open("diary.txt", "r")
             lines = diary.readlines()
+            entries = []
             print("\n(Psst. If you cannot remember a certain date or keyword of an entry, "
                   "just type can't remember or don't remember)")
             date = input("\nEnter date of entry you wish to access: ")
 
             if date == "can't remember" or date == "don't remember":
                 key_word = input("\nThat's okay! Enter specific keyword(s) of entry you wish to access: ")
-                for line in lines:
-                    if key_word in line:
-                        output2 = textwrap.fill(line, width=125)
-                        print("\n" + output2)
-                        break
-                else:
-                    print("\nSorry, entry not found. Please try again.")
                 if key_word == "can't remember" or key_word == "don't remember":
-                    print("\nSorry. Entry not found with this keyword. Try again.")
+                    print("\nHere are all your entries to alleviate your confusion: ")
+                    all_entry()
+                else:
+                    for line in lines:
+                        if key_word in line:
+                            entries.append(line)
+                        else:
+                            continue
+
+                    for i in range(len(entries)):
+                        output = textwrap.fill(entries[i], width=125)
+                        print(output)
 
             else:
                 for line in lines:
                     if date in line:
-                        output = textwrap.fill(line, width=125)
-                        print("\n" + output)
-                        break
-                else:
-                    print("\nSorry. Entry not found for this date. Try again!")
+                        entries.append(line)
+                    else:
+                        continue
+
+                for i in range(len(entries)):
+                    output2 = textwrap.fill(entries[i], width=125)
+                    print(output2)
 
             diary.close()
+
+
+        def add_entry():
+            diary = open("diary.txt", "r+")
+            lines = diary.readlines()
+            entries = []
+            print("\n(Psst. If you cannot remember a certain date or keyword of an entry, "
+                  "just type can't remember or don't remember)")
+            date = input("\nEnter date of entry you wish to modify: ")
+
+            if date == "can't remember" or date == "don't remember":
+                key_word = input("\nThat's okay! Enter specific keyword(s) of entry you wish to modify: ")
+                if key_word == "can't remember" or key_word == "don't remember":
+                    print("\nHere are all your entries to alleviate your confusion: ")
+                    all_entry()
+                else:
+                    for line in lines:
+                        if key_word in line:
+                            entries.append(line)
+                        else:
+                            continue
+
+                    for i in range(len(entries)):
+                        output3 = textwrap.fill(entries[i], width=125)
+                        print(output3)
+
+                    rep1 = "\nEnter the portion of the entry you want to succeed: "
+                    mod1 = "\nEnter your successive entry: "
+
+                    if rep1 in entries[-1]:
+                        entries.append(mod1)
+                    else:
+                        for i, line in enumerate(entries):
+                            if rep1 in line and mod1 not in entries[i + 1]:
+                                entries.insert(i + 1, mod1)
+                                break
+                    diary.seek(0)
+                    diary.writelines(entries)
+
+
+            else:
+                for line in lines:
+                    if date in line:
+                        entries.append(line)
+                    else:
+                        continue
+
+                for i in range(len(entries)):
+                    output4 = textwrap.fill(entries[i], width=125)
+                    print(output4)
+
+                rep2 = input("\nEnter the portion of the entry you want to succeed: ")
+                mod2 = input("\nEnter your successive entry: ")
+
+                for line in lines:
+                    line = line.rstrip("\n")
+                    if rep2 in line:
+                        line = line + " " + mod2
+                        diary.write(line)
 
 
         def del_entry():
             diary = open("diary.txt", "r")
             lines = diary.readlines()
-            del_diary = open("diary.txt", "w")
+            entries = []
+            print("\n(Psst. If you cannot remember a certain date or keyword of an entry, "
+                  "just type can't remember or don't remember)")
             date = input("\nEnter date of entry you wish to delete: ")
-            for line in lines:
-                if date not in line.strip():
-                    del_diary.write(line)
-            print("\nEntry Successfully Deleted.")
-            diary.close()
+
+            if date == "can't remember" or date == "don't remember":
+                key_word = input("\nThat's okay! Enter specific keyword(s) of entry you wish to access: ")
+                if key_word == "can't remember" or key_word == "don't remember":
+                    print("\nHere are all your entries to alleviate your confusion: ")
+                    all_entry()
+                else:
+                    for line in lines:
+                        if key_word in line:
+                            entries.append(line)
+                        else:
+                            continue
+
+                    for i in range(len(entries)):
+                        output7 = textwrap.fill(entries[i], width=125)
+                        print(output7)
+
+                    key_word = input("\nEnter key word(s) of the previous entry that you wish to delete: ")
+                    del_diary = open("diary.txt", "w")
+                    for line in lines:
+                        if key_word not in line.rstrip():
+                            del_diary.write(line)
+                    print("\nEntry Successfully Deleted.")
+                    del_diary.close()
+
+            else:
+                for line in lines:
+                    if date in line:
+                        entries.append(line)
+                    else:
+                        continue
+
+                for i in range(len(entries)):
+                    output8 = textwrap.fill(entries[i], width=125)
+                    print(output8)
+
+                key_word = input("\nEnter key word(s) of the entry you wish to delete: ")
+                del_diary = open("diary.txt", "w")
+                for line in lines:
+                    if key_word not in line.rstrip():
+                        del_diary.write(line)
+                print("\nEntry Successfully Deleted.")
+                del_diary.close()
 
 
         def all_entry():
             diary = open("diary.txt", "r")
-            file_size = os.stat("diary.txt").st_size
-            if file_size == 0:
-                print("\nNo entries currently present in file. Restart to make a new entry(s)!")
-            else:
-                lines = diary.readlines()
-                for line in lines:
-                    output3 = textwrap.fill(line, width=125)
-                    print(output3)
-            diary.close()
+            lines = diary.readlines()
+            for line in lines:
+                read = textwrap.fill(line, width=125)
+                print(read)
 
 
         def clear_entry():
@@ -95,13 +203,19 @@ while count != 0:
             read_entry()
 
         elif choice == 3:
-            del_entry()
+            add_entry()
 
         elif choice == 4:
-            all_entry()
+            del_entry()
 
         elif choice == 5:
+            all_entry()
+
+        elif choice == 6:
             clear_entry()
+
+        else:
+            print("\nSorry. Choice invalid.")
 
         break
 
